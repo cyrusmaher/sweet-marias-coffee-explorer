@@ -2,7 +2,7 @@ name: Scrape Coffee Bean Corral
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday 6am UTC
+    - cron: '40 6 * * 1'  # Every Monday 6:40am UTC
   workflow_dispatch:        # Manual trigger
 
 permissions:

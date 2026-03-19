@@ -2,7 +2,7 @@ name: Scrape Hacea Coffee
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday 6am UTC
+    - cron: '20 6 * * 1'  # Every Monday 6:20am UTC
   workflow_dispatch:        # Manual trigger
 
 permissions:
