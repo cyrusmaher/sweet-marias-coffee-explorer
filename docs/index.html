@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sweet Maria's Coffee Explorer</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root {
+    --bg: #faf6f1;
+    --surface: #fff;
+    --border: #e0d5c7;
+    --text: #3b2f2f;
+    --text-muted: #7a6a5a;
+    --accent: #8b5e3c;
+    --accent-light: #c49a6c;
+    --highlight: #f5ebe0;
+    --row-hover: #fdf2e9;
+    --selected: #f0e0cc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  #search {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: rgba(255,255,255,0.9);
+    color: var(--text);
+  }
+  #search::placeholder { color: var(--text-muted); }
+
+  #stats {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  /* --- Table --- */
+  #table-container {
+    overflow-x: auto;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--highlight);
+    border-bottom: 2px solid var(--border);
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  thead th:hover { background: var(--selected); }
+  thead th .sort-arrow { margin-left: 4px; font-size: 0.7rem; }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  tbody tr:hover { background: var(--row-hover); }
+  tbody tr.selected { background: var(--selected); }
+  tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+
+  td {
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+  }
+  td.wrap { white-space: normal; max-width: 300px; }
+
+  /* --- Detail Panel --- */
+  #detail-panel {
+    display: none;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+  #detail-panel.visible { display: block; }
+
+  #detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  #detail-header h2 {
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+
+  #detail-header a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+  }
+  #detail-header a:hover { text-decoration: underline; }
+
+  #close-detail {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  #close-detail:hover { background: var(--highlight); }
+
+  #charts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .chart-wrapper {
+    text-align: center;
+  }
+  .chart-wrapper h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .chart-wrapper canvas {
+    max-height: 320px;
+  }
+
+  #detail-specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+  .spec-item { display: flex; gap: 0.4rem; }
+  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .spec-value { color: var(--text); }
+
+  .notes-section { margin-bottom: 1rem; }
+  .notes-section h3 {
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .notes-section p {
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* --- Loading --- */
+  #loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 768px) {
+    header { flex-direction: column; align-items: stretch; }
+    #search { max-width: none; }
+    #charts-container { grid-template-columns: 1fr; }
+    #detail-specs { grid-template-columns: 1fr; }
+    td { font-size: 0.8rem; padding: 0.4rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sweet Maria's Coffee Explorer</h1>
+  <input type="text" id="search" placeholder="Search coffees (e.g. &quot;blueberry&quot;, &quot;Ethiopia&quot;, &quot;natural&quot;)...">
+  <span id="stats"></span>
+</header>
+
+<main>
+  <div id="loading">Loading coffee data...</div>
+
+  <div id="detail-panel">
+    <div id="detail-header">
+      <div>
+        <h2 id="detail-name"></h2>
+        <a id="detail-link" href="#" target="_blank" rel="noopener">View on Sweet Maria's</a>
+      </div>
+      <button id="close-detail">Close</button>
+    </div>
+    <div id="charts-container">
+      <div class="chart-wrapper">
+        <h3>Cupping Scores</h3>
+        <canvas id="cupping-chart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <h3>Flavor Profile</h3>
+        <canvas id="flavor-chart"></canvas>
+      </div>
+    </div>
+    <div id="detail-specs"></div>
+    <div id="detail-notes"></div>
+  </div>
+
+  <div id="table-container">
+    <table>
+      <thead><tr id="table-head"></tr></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+/* ---------- Config ---------- */
+const TABLE_COLS = [
+  { key: "name",             label: "Name",         wrap: true },
+  { key: "price",            label: "Price",        sort: "price" },
+  { key: "total_score",      label: "Score",        sort: "num" },
+  { key: "country",          label: "Country" },
+  { key: "origin_category",  label: "Region" },
+  { key: "process_method",   label: "Process" },
+  { key: "cultivar",         label: "Cultivar" },
+  { key: "roast_recommendations", label: "Roast" },
+];
+
+const CUPPING_KEYS = [
+  "cupping_dry_fragrance", "cupping_wet_aroma", "cupping_brightness",
+  "cupping_flavor", "cupping_body", "cupping_finish",
+  "cupping_sweetness", "cupping_clean_cup", "cupping_complexity", "cupping_uniformity",
+];
+const CUPPING_LABELS = [
+  "Dry Fragrance", "Wet Aroma", "Brightness", "Flavor", "Body",
+  "Finish", "Sweetness", "Clean Cup", "Complexity", "Uniformity",
+];
+
+const FLAVOR_KEYS = [
+  "flavor_floral", "flavor_honey", "flavor_sugars", "flavor_caramel",
+  "flavor_fruits", "flavor_citrus", "flavor_berry", "flavor_cocoa",
+  "flavor_nuts", "flavor_rustic", "flavor_spice", "flavor_flavor_body",
+];
+const FLAVOR_LABELS = [
+  "Floral", "Honey", "Sugars", "Caramel", "Fruits", "Citrus",
+  "Berry", "Cocoa", "Nuts", "Rustic", "Spice", "Body",
+];
+
+const SPEC_FIELDS = [
+  { key: "price", label: "Price" },
+  { key: "total_score", label: "Score" },
+  { key: "country", label: "Country" },
+  { key: "region", label: "Region" },
+  { key: "process_method", label: "Process" },
+  { key: "cultivar", label: "Cultivar" },
+  { key: "cultivar_detail", label: "Cultivar Detail" },
+  { key: "processing", label: "Processing" },
+  { key: "drying_method", label: "Drying" },
+  { key: "arrival_date", label: "Arrival" },
+  { key: "lot_size", label: "Lot Size" },
+  { key: "bag_size", label: "Bag Size" },
+  { key: "grade", label: "Grade" },
+  { key: "appearance", label: "Appearance" },
+  { key: "roast_recommendations", label: "Roast" },
+  { key: "recommended_for_espresso", label: "Espresso?" },
+  { key: "farm_gate", label: "Farm Gate" },
+  { key: "type", label: "Type" },
+];
+
+/* ---------- State ---------- */
+let allCoffees = [];
+let filtered = [];
+let sortCol = "total_score";
+let sortDir = -1;  // descending
+let selectedIdx = -1;
+let cuppingChart = null;
+let flavorChart = null;
+
+/* ---------- Data loading ---------- */
+fetch("data.json")
+  .then(r => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(data => {
+    allCoffees = data;
+    filtered = [...allCoffees];
+    document.getElementById("loading").style.display = "none";
+    buildTableHead();
+    sortAndRender();
+  })
+  .catch(err => {
+    document.getElementById("loading").textContent = "Failed to load data: " + err.message;
+  });
+
+/* ---------- Search ---------- */
+document.getElementById("search").addEventListener("input", function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) {
+    filtered = [...allCoffees];
+  } else {
+    filtered = allCoffees.filter(c =>
+      Object.values(c).some(v => String(v).toLowerCase().includes(q))
+    );
+  }
+  selectedIdx = -1;
+  sortAndRender();
+});
+
+/* ---------- Table head ---------- */
+function buildTableHead() {
+  const tr = document.getElementById("table-head");
+  tr.innerHTML = "";
+  TABLE_COLS.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col.label;
+    th.dataset.key = col.key;
+    if (col.key === sortCol) {
+      th.innerHTML += `<span class="sort-arrow">${sortDir > 0 ? "\u25B2" : "\u25BC"}</span>`;
+    }
+    th.addEventListener("click", () => {
+      if (sortCol === col.key) {
+        sortDir *= -1;
+      } else {
+        sortCol = col.key;
+        sortDir = col.key === "name" ? 1 : -1;
+      }
+      sortAndRender();
+    });
+    tr.appendChild(th);
+  });
+}
+
+/* ---------- Sorting ---------- */
+function sortVal(c, key) {
+  const v = c[key] || "";
+  if (key === "price") {
+    return parseFloat(v.replace("$", "")) || 0;
+  }
+  if (key === "total_score") {
+    return parseFloat(v) || 0;
+  }
+  return v.toLowerCase();
+}
+
+function sortAndRender() {
+  filtered.sort((a, b) => {
+    const va = sortVal(a, sortCol);
+    const vb = sortVal(b, sortCol);
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return 1 * sortDir;
+    return 0;
+  });
+  renderTable();
+  buildTableHead();
+  document.getElementById("stats").textContent = `${filtered.length} coffees`;
+}
+
+/* ---------- Table body ---------- */
+function renderTable() {
+  const tbody = document.getElementById("table-body");
+  tbody.innerHTML = "";
+  filtered.forEach((c, i) => {
+    const tr = document.createElement("tr");
+    if (i === selectedIdx) tr.classList.add("selected");
+    TABLE_COLS.forEach(col => {
+      const td = document.createElement("td");
+      td.textContent = c[col.key] || "";
+      if (col.wrap) td.classList.add("wrap");
+      tr.appendChild(td);
+    });
+    tr.addEventListener("click", () => showDetail(i));
+    tbody.appendChild(tr);
+  });
+}
+
+/* ---------- Detail panel ---------- */
+function showDetail(idx) {
+  selectedIdx = idx;
+  const c = filtered[idx];
+  const panel = document.getElementById("detail-panel");
+
+  document.getElementById("detail-name").textContent = c.name;
+  const link = document.getElementById("detail-link");
+  link.href = c.url;
+  link.textContent = "View on Sweet Maria\u2019s \u2192";
+
+  // Specs
+  const specsEl = document.getElementById("detail-specs");
+  specsEl.innerHTML = SPEC_FIELDS
+    .filter(f => c[f.key])
+    .map(f => `<div class="spec-item"><span class="spec-label">${f.label}:</span><span class="spec-value">${c[f.key]}</span></div>`)
+    .join("");
+
+  // Notes
+  const notesEl = document.getElementById("detail-notes");
+  let notesHtml = "";
+  if (c.short_description) {
+    notesHtml += `<div class="notes-section"><h3>Overview</h3><p>${esc(c.short_description)}</p></div>`;
+  }
+  if (c.full_cupping_notes) {
+    notesHtml += `<div class="notes-section"><h3>Cupping Notes</h3><p>${esc(c.full_cupping_notes)}</p></div>`;
+  }
+  if (c.farm_notes) {
+    notesHtml += `<div class="notes-section"><h3>Farm Notes</h3><p>${esc(c.farm_notes)}</p></div>`;
+  }
+  notesEl.innerHTML = notesHtml;
+
+  // Charts
+  renderCuppingChart(c);
+  renderFlavorChart(c);
+
+  panel.classList.add("visible");
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  renderTable();  // re-render to update selected row
+}
+
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+document.getElementById("close-detail").addEventListener("click", () => {
+  document.getElementById("detail-panel").classList.remove("visible");
+  selectedIdx = -1;
+  renderTable();
+});
+
+/* ---------- Charts ---------- */
+const chartColors = {
+  cupping: {
+    bg: "rgba(139, 94, 60, 0.2)",
+    border: "rgba(139, 94, 60, 0.8)",
+    point: "rgba(139, 94, 60, 1)",
+  },
+  flavor: {
+    bg: "rgba(196, 154, 108, 0.2)",
+    border: "rgba(196, 154, 108, 0.8)",
+    point: "rgba(196, 154, 108, 1)",
+  },
+};
+
+function radarOpts(maxVal) {
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: maxVal,
+        ticks: { stepSize: maxVal === 10 ? 2 : 1, display: false },
+        pointLabels: { font: { size: 11 }, color: "#7a6a5a" },
+        grid: { color: "rgba(0,0,0,0.06)" },
+        angleLines: { color: "rgba(0,0,0,0.06)" },
+      },
+    },
+  };
+}
+
+function renderCuppingChart(c) {
+  const ctx = document.getElementById("cupping-chart").getContext("2d");
+  const data = CUPPING_KEYS.map(k => parseFloat(c[k]) || 0);
+  if (cuppingChart) cuppingChart.destroy();
+  cuppingChart = new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels: CUPPING_LABELS,
+      datasets: [{
+        data: data,
+        backgroundColor: chartColors.cupping.bg,
+        borderColor: chartColors.cupping.border,
+        pointBackgroundColor: chartColors.cupping.point,
+        pointRadius: 3,
+        borderWidth: 2,
+      }],
+    },
+    options: radarOpts(10),
+  });
+}
+
+function renderFlavorChart(c) {
+  const ctx = document.getElementById("flavor-chart").getContext("2d");
+  const data = FLAVOR_KEYS.map(k => parseFloat(c[k]) || 0);
+  if (flavorChart) flavorChart.destroy();
+  flavorChart = new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels: FLAVOR_LABELS,
+      datasets: [{
+        data: data,
+        backgroundColor: chartColors.flavor.bg,
+        borderColor: chartColors.flavor.border,
+        pointBackgroundColor: chartColors.flavor.point,
+        pointRadius: 3,
+        borderWidth: 2,
+      }],
+    },
+    options: radarOpts(5),
+  });
+}
+</script>
+</body>
+</html>

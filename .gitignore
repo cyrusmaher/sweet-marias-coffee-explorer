@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.playwright-mcp/
+.claude/
+screenshot_full.png
+snapshot_listing.md
+scrape_sweet_marias.py
+sweet_marias_green_coffee.csv
