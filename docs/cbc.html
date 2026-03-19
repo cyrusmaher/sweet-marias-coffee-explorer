@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sweet Maria's Coffee Explorer</title>
+<title>Coffee Bean Corral Explorer</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
   :root {
@@ -17,6 +17,7 @@
     --highlight: #f5ebe0;
     --row-hover: #fdf2e9;
     --selected: #f0e0cc;
+    --star-color: #d4a017;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,6 +44,8 @@
     font-weight: 600;
     white-space: nowrap;
   }
+
+  .nav-links { display: flex; gap: 0.5rem; }
 
   .nav-link {
     color: rgba(255,255,255,0.8);
@@ -130,6 +133,8 @@
   }
   td.wrap { white-space: normal; max-width: 300px; }
 
+  .stars { color: var(--star-color); letter-spacing: 1px; }
+
   /* --- Detail Panel --- */
   #detail-panel {
     display: none;
@@ -171,6 +176,13 @@
     font-size: 0.85rem;
   }
   #close-detail:hover { background: var(--highlight); }
+
+  .detail-rating {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  .detail-rating .stars { font-size: 1.2rem; }
+  .detail-rating .review-count { font-size: 0.85rem; color: var(--text-muted); margin-left: 0.5rem; }
 
   #charts-container {
     display: grid;
@@ -235,10 +247,12 @@
 <body>
 
 <header>
-  <h1>Sweet Maria's Coffee Explorer</h1>
-  <a class="nav-link" href="hacea.html">Hacea</a>
-  <a class="nav-link" href="cbc.html">Coffee Bean Corral</a>
-  <input type="text" id="search" placeholder="Search coffees (e.g. &quot;blueberry&quot;, &quot;Ethiopia&quot;, &quot;natural&quot;)...">
+  <h1>Coffee Bean Corral Explorer</h1>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Sweet Maria's</a>
+    <a class="nav-link" href="hacea.html">Hacea Coffee</a>
+  </div>
+  <input type="text" id="search" placeholder="Search coffees (e.g. &quot;fruity&quot;, &quot;Ethiopia&quot;, &quot;natural&quot;)...">
   <span id="stats"></span>
 </header>
 
@@ -249,17 +263,18 @@
     <div id="detail-header">
       <div>
         <h2 id="detail-name"></h2>
-        <a id="detail-link" href="#" target="_blank" rel="noopener">View on Sweet Maria's</a>
+        <a id="detail-link" href="#" target="_blank" rel="noopener">View on Coffee Bean Corral</a>
       </div>
       <button id="close-detail">Close</button>
     </div>
+    <div id="detail-rating" class="detail-rating"></div>
     <div id="charts-container">
       <div class="chart-wrapper">
-        <h3>Cupping Scores</h3>
-        <canvas id="cupping-chart"></canvas>
+        <h3>Attributes (1-7)</h3>
+        <canvas id="attr-chart"></canvas>
       </div>
       <div class="chart-wrapper">
-        <h3>Flavor Profile</h3>
+        <h3>Flavors (1-4)</h3>
         <canvas id="flavor-chart"></canvas>
       </div>
     </div>
@@ -278,70 +293,51 @@
 <script>
 /* ---------- Config ---------- */
 const TABLE_COLS = [
-  { key: "name",             label: "Name",         wrap: true },
-  { key: "price",            label: "Price",        sort: "price" },
-  { key: "total_score",      label: "Score",        sort: "num" },
-  { key: "country",          label: "Country" },
-  { key: "origin_category",  label: "Region" },
-  { key: "process_method",   label: "Process" },
-  { key: "cultivar",         label: "Cultivar" },
-  { key: "roast_recommendations", label: "Roast" },
+  { key: "name",         label: "Name",       wrap: true },
+  { key: "price",        label: "Price",      sort: "price" },
+  { key: "rating",       label: "Rating",     sort: "num" },
+  { key: "country",      label: "Country" },
+  { key: "process",      label: "Process" },
+  { key: "category",     label: "Category" },
+  { key: "variety",      label: "Variety",    wrap: true },
 ];
 
-const CUPPING_KEYS = [
-  "cupping_dry_fragrance", "cupping_wet_aroma", "cupping_brightness",
-  "cupping_flavor", "cupping_body", "cupping_finish",
-  "cupping_sweetness", "cupping_clean_cup", "cupping_complexity", "cupping_uniformity",
-];
-const CUPPING_LABELS = [
-  "Dry Fragrance", "Wet Aroma", "Brightness", "Flavor", "Body",
-  "Finish", "Sweetness", "Clean Cup", "Complexity", "Uniformity",
-];
+const ATTR_KEYS = ["attr_brightness", "attr_body", "attr_aroma", "attr_complexity", "attr_balance", "attr_sweetness"];
+const ATTR_LABELS = ["Brightness", "Body", "Aroma", "Complexity", "Balance", "Sweetness"];
 
-const FLAVOR_KEYS = [
-  "flavor_floral", "flavor_honey", "flavor_sugars", "flavor_caramel",
-  "flavor_fruits", "flavor_citrus", "flavor_berry", "flavor_cocoa",
-  "flavor_nuts", "flavor_rustic", "flavor_spice", "flavor_flavor_body",
-];
-const FLAVOR_LABELS = [
-  "Floral", "Honey", "Sugars", "Caramel", "Fruits", "Citrus",
-  "Berry", "Cocoa", "Nuts", "Rustic", "Spice", "Body",
-];
+const FLAVOR_KEYS = ["flavor_spicy", "flavor_chocolaty", "flavor_nutty", "flavor_buttery", "flavor_fruity", "flavor_flowery", "flavor_winey", "flavor_earthy"];
+const FLAVOR_LABELS = ["Spicy", "Chocolaty", "Nutty", "Buttery", "Fruity", "Flowery", "Winey", "Earthy"];
 
 const SPEC_FIELDS = [
   { key: "price", label: "Price" },
-  { key: "total_score", label: "Score" },
+  { key: "rating", label: "Rating" },
   { key: "country", label: "Country" },
-  { key: "region", label: "Region" },
-  { key: "process_method", label: "Process" },
-  { key: "cultivar", label: "Cultivar" },
-  { key: "cultivar_detail", label: "Cultivar Detail" },
-  { key: "processing", label: "Processing" },
-  { key: "drying_method", label: "Drying" },
-  { key: "arrival_date", label: "Arrival" },
-  { key: "lot_size", label: "Lot Size" },
-  { key: "bag_size", label: "Bag Size" },
-  { key: "grade", label: "Grade" },
-  { key: "appearance", label: "Appearance" },
-  { key: "roast_recommendations", label: "Roast" },
-  { key: "recommended_for_espresso", label: "Espresso?" },
-  { key: "farm_gate", label: "Farm Gate" },
-  { key: "type", label: "Type" },
+  { key: "local_region", label: "Region" },
+  { key: "category", label: "Category" },
+  { key: "process", label: "Process" },
+  { key: "variety", label: "Variety" },
+  { key: "altitude", label: "Altitude" },
+  { key: "harvest", label: "Harvest" },
+  { key: "certifications", label: "Certifications" },
+  { key: "organic", label: "Organic" },
+  { key: "fair_trade", label: "Fair Trade" },
+  { key: "rainforest_alliance", label: "Rainforest Alliance" },
+  { key: "decaffeinated", label: "Decaf" },
 ];
 
 /* ---------- State ---------- */
 let allCoffees = [];
 let filtered = [];
-let sortCol = "total_score";
-let sortDir = -1;  // descending
+let sortCol = "rating";
+let sortDir = -1;
 let selectedIdx = -1;
-let cuppingChart = null;
+let attrChart = null;
 let flavorChart = null;
 
 /* ---------- Data loading ---------- */
-fetch("data.json")
+fetch("cbc-data.json")
   .then(r => {
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
   })
   .then(data => {
@@ -378,7 +374,7 @@ function buildTableHead() {
     th.textContent = col.label;
     th.dataset.key = col.key;
     if (col.key === sortCol) {
-      th.innerHTML += `<span class="sort-arrow">${sortDir > 0 ? "\u25B2" : "\u25BC"}</span>`;
+      th.innerHTML += '<span class="sort-arrow">' + (sortDir > 0 ? "\u25B2" : "\u25BC") + '</span>';
     }
     th.addEventListener("click", () => {
       if (sortCol === col.key) {
@@ -396,12 +392,8 @@ function buildTableHead() {
 /* ---------- Sorting ---------- */
 function sortVal(c, key) {
   const v = c[key] || "";
-  if (key === "price") {
-    return parseFloat(v.replace("$", "")) || 0;
-  }
-  if (key === "total_score") {
-    return parseFloat(v) || 0;
-  }
+  if (key === "price") return parseFloat(v.replace("$", "")) || 0;
+  if (key === "rating") return parseFloat(v) || 0;
   return v.toLowerCase();
 }
 
@@ -415,7 +407,20 @@ function sortAndRender() {
   });
   renderTable();
   buildTableHead();
-  document.getElementById("stats").textContent = `${filtered.length} coffees`;
+  document.getElementById("stats").textContent = filtered.length + " coffees";
+}
+
+/* ---------- Stars ---------- */
+function starsHtml(rating) {
+  const r = parseFloat(rating) || 0;
+  if (r === 0) return "";
+  let s = "";
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(r)) s += "\u2605";
+    else if (i - 0.5 <= r) s += "\u00BD";
+    else s += "\u2606";
+  }
+  return '<span class="stars">' + s + '</span>';
 }
 
 /* ---------- Table body ---------- */
@@ -427,7 +432,11 @@ function renderTable() {
     if (i === selectedIdx) tr.classList.add("selected");
     TABLE_COLS.forEach(col => {
       const td = document.createElement("td");
-      td.textContent = c[col.key] || "";
+      if (col.key === "rating") {
+        td.innerHTML = starsHtml(c.rating);
+      } else {
+        td.textContent = c[col.key] || "";
+      }
       if (col.wrap) td.classList.add("wrap");
       tr.appendChild(td);
     });
@@ -445,36 +454,43 @@ function showDetail(idx) {
   document.getElementById("detail-name").textContent = c.name;
   const link = document.getElementById("detail-link");
   link.href = c.url;
-  link.textContent = "View on Sweet Maria\u2019s \u2192";
+  link.textContent = "View on Coffee Bean Corral \u2192";
+
+  // Rating
+  const ratingEl = document.getElementById("detail-rating");
+  const r = parseFloat(c.rating) || 0;
+  if (r > 0) {
+    const reviews = c.review_count ? ' <span class="review-count">(' + esc(c.review_count) + ' reviews)</span>' : '';
+    ratingEl.innerHTML = starsHtml(c.rating) + ' <strong>' + r.toFixed(1) + '</strong>' + reviews;
+  } else {
+    ratingEl.innerHTML = '<span style="color:var(--text-muted);font-size:0.85rem">No reviews yet</span>';
+  }
 
   // Specs
   const specsEl = document.getElementById("detail-specs");
   specsEl.innerHTML = SPEC_FIELDS
     .filter(f => c[f.key])
-    .map(f => `<div class="spec-item"><span class="spec-label">${f.label}:</span><span class="spec-value">${c[f.key]}</span></div>`)
+    .map(f => '<div class="spec-item"><span class="spec-label">' + esc(f.label) + ':</span><span class="spec-value">' + esc(c[f.key]) + '</span></div>')
     .join("");
 
   // Notes
   const notesEl = document.getElementById("detail-notes");
   let notesHtml = "";
-  if (c.short_description) {
-    notesHtml += `<div class="notes-section"><h3>Overview</h3><p>${esc(c.short_description)}</p></div>`;
+  if (c.cupping_notes) {
+    notesHtml += '<div class="notes-section"><h3>Cupping Notes</h3><p>' + esc(c.cupping_notes) + '</p></div>';
   }
-  if (c.full_cupping_notes) {
-    notesHtml += `<div class="notes-section"><h3>Cupping Notes</h3><p>${esc(c.full_cupping_notes)}</p></div>`;
-  }
-  if (c.farm_notes) {
-    notesHtml += `<div class="notes-section"><h3>Farm Notes</h3><p>${esc(c.farm_notes)}</p></div>`;
+  if (c.description) {
+    notesHtml += '<div class="notes-section"><h3>Description</h3><p>' + esc(c.description) + '</p></div>';
   }
   notesEl.innerHTML = notesHtml;
 
   // Charts
-  renderCuppingChart(c);
+  renderAttrChart(c);
   renderFlavorChart(c);
 
   panel.classList.add("visible");
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
-  renderTable();  // re-render to update selected row
+  renderTable();
 }
 
 function esc(s) {
@@ -491,7 +507,7 @@ document.getElementById("close-detail").addEventListener("click", () => {
 
 /* ---------- Charts ---------- */
 const chartColors = {
-  cupping: {
+  attr: {
     bg: "rgba(139, 94, 60, 0.2)",
     border: "rgba(139, 94, 60, 0.8)",
     point: "rgba(139, 94, 60, 1)",
@@ -512,7 +528,7 @@ function radarOpts(maxVal) {
       r: {
         beginAtZero: true,
         max: maxVal,
-        ticks: { stepSize: maxVal === 10 ? 2 : 1, display: false },
+        ticks: { stepSize: 1, display: false },
         pointLabels: { font: { size: 11 }, color: "#7a6a5a" },
         grid: { color: "rgba(0,0,0,0.06)" },
         angleLines: { color: "rgba(0,0,0,0.06)" },
@@ -521,31 +537,41 @@ function radarOpts(maxVal) {
   };
 }
 
-function renderCuppingChart(c) {
-  const ctx = document.getElementById("cupping-chart").getContext("2d");
-  const data = CUPPING_KEYS.map(k => parseFloat(c[k]) || 0);
-  if (cuppingChart) cuppingChart.destroy();
-  cuppingChart = new Chart(ctx, {
+function renderAttrChart(c) {
+  const ctx = document.getElementById("attr-chart").getContext("2d");
+  const data = ATTR_KEYS.map(k => parseFloat(c[k]) || 0);
+  const hasData = data.some(v => v > 0);
+  if (attrChart) attrChart.destroy();
+  if (!hasData) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    return;
+  }
+  attrChart = new Chart(ctx, {
     type: "radar",
     data: {
-      labels: CUPPING_LABELS,
+      labels: ATTR_LABELS,
       datasets: [{
         data: data,
-        backgroundColor: chartColors.cupping.bg,
-        borderColor: chartColors.cupping.border,
-        pointBackgroundColor: chartColors.cupping.point,
+        backgroundColor: chartColors.attr.bg,
+        borderColor: chartColors.attr.border,
+        pointBackgroundColor: chartColors.attr.point,
         pointRadius: 3,
         borderWidth: 2,
       }],
     },
-    options: radarOpts(10),
+    options: radarOpts(7),
   });
 }
 
 function renderFlavorChart(c) {
   const ctx = document.getElementById("flavor-chart").getContext("2d");
   const data = FLAVOR_KEYS.map(k => parseFloat(c[k]) || 0);
+  const hasData = data.some(v => v > 0);
   if (flavorChart) flavorChart.destroy();
+  if (!hasData) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    return;
+  }
   flavorChart = new Chart(ctx, {
     type: "radar",
     data: {
@@ -559,7 +585,7 @@ function renderFlavorChart(c) {
         borderWidth: 2,
       }],
     },
-    options: radarOpts(5),
+    options: radarOpts(4),
   });
 }
 </script>
