@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sweet Maria's Coffee Explorer</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js" integrity="sha512-4xUl/d6D6THrAnXAwGajXkoWaeMNwEKK4iNfq5DotEbFlY2F8Jr3g+4cV7FGhZLbN+tKAcGJXGYi5GkqI7Nug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   :root {
     --bg: #faf6f1;
@@ -333,6 +334,7 @@ const SPEC_FIELDS = [
 /* ---------- State ---------- */
 let allCoffees = [];
 let filtered = [];
+let searchIndex = null;
 let sortCol = "total_score";
 let sortDir = -1;  // descending
 let selectedIdx = -1;
@@ -346,7 +348,19 @@ fetch("data.json")
     return r.json();
   })
   .then(data => {
-    allCoffees = data;
+    allCoffees = data.map((c, i) => ({ ...c, _idx: i }));
+    // Build Lunr search index
+    searchIndex = lunr(function() {
+      this.field('name', { boost: 3 });
+      this.field('country', { boost: 2 });
+      this.field('origin_category');
+      this.field('cultivar');
+      this.field('process_method');
+      this.field('short_description');
+      this.field('full_cupping_notes');
+      this.ref('_idx');
+      allCoffees.forEach(c => { this.add(c); });
+    });
     filtered = [...allCoffees];
     document.getElementById("loading").style.display = "none";
     buildTableHead();
@@ -358,13 +372,20 @@ fetch("data.json")
 
 /* ---------- Search ---------- */
 document.getElementById("search").addEventListener("input", function() {
-  const q = this.value.toLowerCase().trim();
+  const q = this.value.trim();
   if (!q) {
     filtered = [...allCoffees];
-  } else {
-    filtered = allCoffees.filter(c =>
-      Object.values(c).some(v => String(v).toLowerCase().includes(q))
-    );
+  } else if (searchIndex) {
+    try {
+      const results = searchIndex.search(q + '*');
+      const idxSet = new Set(results.map(r => parseInt(r.ref)));
+      filtered = allCoffees.filter(c => idxSet.has(c._idx));
+    } catch {
+      const ql = q.toLowerCase();
+      filtered = allCoffees.filter(c =>
+        Object.values(c).some(v => String(v).toLowerCase().includes(ql))
+      );
+    }
   }
   selectedIdx = -1;
   sortAndRender();
