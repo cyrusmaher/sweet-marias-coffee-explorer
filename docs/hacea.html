@@ -259,7 +259,7 @@
     td { font-size: 0.8rem; padding: 0.4rem 0.5rem; }
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js" integrity="sha512-4xUl/d6D6THrAnXAwGajXkoWaeMNwEKK4iNfq5DotEbFlY2F8Jr3g+4cV7FGhZLbN+tKAcGJXGYi5GkqI7Nug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
 
@@ -372,8 +372,9 @@ document.getElementById("search").addEventListener("input", function() {
     filtered = [...allCoffees];
   } else if (searchIndex) {
     try {
-      const results = searchIndex.search(q + '*');
-      const idxSet = new Set(results.map(r => parseInt(r.ref)));
+      const stemmed = searchIndex.search(q);
+      const wildcard = searchIndex.search(q + '*');
+      const idxSet = new Set([...stemmed, ...wildcard].map(r => parseInt(r.ref)));
       filtered = allCoffees.filter(c => idxSet.has(c._idx));
     } catch {
       const ql = q.toLowerCase();

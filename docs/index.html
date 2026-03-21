@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sweet Maria's Coffee Explorer</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js" integrity="sha512-4xUl/d6D6THrAnXAwGajXkoWaeMNwEKK4iNfq5DotEbFlY2F8Jr3g+4cV7FGhZLbN+tKAcGJXGYi5GkqI7Nug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 <style>
   :root {
     --bg: #faf6f1;
@@ -377,8 +377,9 @@ document.getElementById("search").addEventListener("input", function() {
     filtered = [...allCoffees];
   } else if (searchIndex) {
     try {
-      const results = searchIndex.search(q + '*');
-      const idxSet = new Set(results.map(r => parseInt(r.ref)));
+      const stemmed = searchIndex.search(q);
+      const wildcard = searchIndex.search(q + '*');
+      const idxSet = new Set([...stemmed, ...wildcard].map(r => parseInt(r.ref)));
       filtered = allCoffees.filter(c => idxSet.has(c._idx));
     } catch {
       const ql = q.toLowerCase();
