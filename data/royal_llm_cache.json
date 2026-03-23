@@ -1,0 +1,92 @@
+{
+  "2c851ea12eb037ed": {
+    "region": "Huila",
+    "altitude": null,
+    "variety": [
+      "Geisha"
+    ],
+    "process": "Honey",
+    "grower": "Juliana Guevara and Wbeimar Lasso, Finca La Terraza",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "4559b3fbd1b32bc1": {
+    "region": "Huila",
+    "altitude": null,
+    "variety": [
+      "SL-28"
+    ],
+    "process": "Washed",
+    "grower": "Juliana Guevara, Wbeimar Lasso, Finca La Terraza",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "bd485667fb73fcf2": {
+    "region": "Huila",
+    "altitude": null,
+    "variety": [
+      "Pink Bourbon"
+    ],
+    "process": "Fermented Natural",
+    "grower": "Juliana Guevara and Wbeimar Lasso, Finca La Terraza",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "c9040e796ae2cba4": {
+    "region": "San Pedro de Cartago, Nariño",
+    "altitude": "surpassing 2400 meters",
+    "variety": [
+      "Chiroso"
+    ],
+    "process": "Washed",
+    "grower": "Evelio Audias Lasso Bolaños, Los Guayacanes",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "5e91c10c3f73e5fd": {
+    "region": "Machakos county",
+    "altitude": null,
+    "variety": [],
+    "process": "Washed",
+    "grower": "Ngomano Farmers Cooperative Society",
+    "harvest": "fly crop",
+    "is_coffee_product": true
+  },
+  "5993a1db809a080b": {
+    "region": "Quimbaya, Quindío",
+    "altitude": null,
+    "variety": [
+      "Caturra",
+      "Castillo"
+    ],
+    "process": "Carbonic Maceration Honey Co-Ferment",
+    "grower": "Pedro Nel Salazar, Finca Sicilia",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "146272d65e5e8af4": {
+    "region": "Quindío",
+    "altitude": null,
+    "variety": [],
+    "process": "Carbonic Honey Co-Ferment",
+    "grower": "Edwin Noreña, Finca Campo Hermoso",
+    "harvest": null,
+    "is_coffee_product": true
+  },
+  "0199bcefa2c54e62": {
+    "region": "Quindío",
+    "altitude": null,
+    "variety": [
+      "Pink Bourbon",
+      "Yellow Bourbon",
+      "Yellow Caturra",
+      "Bourbon Sidra",
+      "Geisha",
+      "Cenicafé 1"
+    ],
+    "process": "Carbonic Honey Peach Co-Ferment",
+    "grower": "Edwin Noreña, Finca Campo Hermoso",
+    "harvest": null,
+    "is_coffee_product": true
+  }
+}
