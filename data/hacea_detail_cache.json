@@ -1021,5 +1021,28 @@
     "tasting_notes": "Fragrance of black pepper and tropical fruit. Up front notes of cocoa and banana with a unique aftertaste of white chocolate, florals  and coconut. Bright malic acidity and a medium body with a creamy mouthfeel.",
     "roasting_notes": "We enjoy this coffee roasted light to medium (around 95 to 75 Agtron) to focus on the unique acidity and sweetness in the cup. The Pacamara is a very large bean size so lower heat settings might be needed during roasting to achieve an even roast from the outside to the inside of the bean. Check out our 2026  Roast Approach on this coffee here.",
     "story": "Finca El Mirador is a small farm located near a small town called Quisaché, meaning  “tree with thorns\" in the local Kakchiquel language An initial short fermentation in cherry precedes classic submerged fermentation in water for 24 to 36 hours It is believed that the town was named after the big and tall trees that were planted across the area. The coffees are grown under shade from Grevillea trees. Finca El Mirador receives 1,500 mm of rainfall on average per year. In 2015, the farm became part of Panorama Estates, the organization that manages the farm. Today, the farm is under the supervision of Panorama Estates standards such as care, selection and separation of the varieties, fertilization methods and processing techniques. These standards and methods have allowed Finca El Mirador to achieve better cup quality and production than neighboring farms in the surrounding area."
+  },
+  "https://haceacoffee.com/products/costa-rica-west-valley-volcan-azul-alejo-castro-reserve-villa-sarchi-warm-anaerobic": {
+    "specs": {
+      "Country": "Costa Rica",
+      "Region": "West Valley, Alajuela",
+      "Farm": "Volcan Azul",
+      "Coordinates": "Coming Soon",
+      "Farmer/Grower": "Alejo Castro Kahle",
+      "Cultivar": "Villa Sarchi",
+      "Processing": "Warm Anaerobic",
+      "Altitude": "1700 m.a.s.l.",
+      "Marks": "005-0025-0208",
+      "Reference ID": "HA-25240-04",
+      "Humidity": "11.6%",
+      "Density": "1.15 g/ml",
+      "Harvest Date": "March, 2025",
+      "Arrival Date": "August, 2025",
+      "SCA Cupping Score": "84.5",
+      "Tariff Cost": "$0.60"
+    },
+    "tasting_notes": "Fragrance and aroma of cherry, maple syrup, and ripe melon. Notes of dried fruit, golden raisin, honey with an aftertaste of raspberry and almond coming together for a soft sweetness. Tart citric acidity and a medium body with a milky mouthfeel.",
+    "roasting_notes": "Villa Sarchi is a compact, high-elevation variety that tends toward moderate-to-high density, so approach drying with enough heat to build a strong rate of rise heading into Maillard; treat drying as the launch pad for the phases that follow. Because this is a warm anaerobic natural, the bean cell structure carries a softness that rewards a gentle start; avoid a high charge temperature, which risks scorching on the exterior before the interior has had time to develop. Watch for an energetic exothermic response as the coffee approaches first crack, and be ready to pull back gas incrementally through caramelization rather than making a single sharp reduction that could stall momentum. The fruit-forward character of this processing style opens up best with a light-to-medium roast, where extended caramelization time builds body and sweetness without masking the variety’s natural brightness.",
+    "story": "Volcan Azul has won 1st place Cup of Excellence three times Volcan Azul is the flagship estate of the Castro Kahle family situated on the slopes of the Poás Volcano in Costa Rica’s West Valley among many other top-10 finishes, most recently 2nd and 8th place in the washed and experimental categories in 2025 Villa Sarchi is a natural mutation of Bourbon first identified in the town of Sarchi in Costa Rica’s Central Valley. It is prized for its compact plant structure, which allows it to thrive at elevation, and for the bright, fruit-forward cups it produces. The warm anaerobic process involves sealing ripe cherries in sealed tanks at a controlled elevated temperature, slowing fermentation and concentrating the fruit character of the variety. The Castro Kahle family has been conserving land since the 1980s, well before environmental stewardship became a common conversation in the coffee industry. In addition to the conservation area above the farm, the family protects over 1,500 hectares of primary forest in the Osa Peninsula, a region National Geographic has called one of the most biologically rich places on Earth."
   }
 }
