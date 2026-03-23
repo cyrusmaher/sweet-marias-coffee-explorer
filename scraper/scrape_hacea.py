@@ -18,6 +18,13 @@ from pathlib import Path
 import requests
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
+# Allow importing match_watchlist from same directory
+_SCRAPER_DIR = Path(__file__).resolve().parent
+if str(_SCRAPER_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRAPER_DIR))
+
+from match_watchlist import WATCHLIST_FIELDS, match_products
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -44,6 +51,8 @@ CSV_COLUMNS = [
     "sca_cupping_score", "tariff_cost",
     "tasting_notes", "roasting_notes", "story",
     "image_url",
+    # Watchlist matching
+    *WATCHLIST_FIELDS,
 ]
 
 
@@ -338,7 +347,12 @@ def main():
 
     log.info("Cache: %d hits, %d misses", cache_hits, cache_misses)
 
-    # Step 3: Write all outputs
+    # Step 3: Watchlist producer matching
+    match_products(records, corpus_fields=[
+        "name", "country", "farmer_grower", "cooperative", "story",
+    ])
+
+    # Step 4: Write all outputs
     save_cache(cache)
     write_csv(records)
     write_json(records)

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hacea Coffee Explorer</title>
+<title>Royal Coffee Explorer</title>
 <style>
   :root {
     --bg: #faf6f1;
@@ -88,6 +88,21 @@
   }
   #search::placeholder { color: var(--text-muted); }
 
+  .filter-group {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .filter-group select {
+    padding: 0.4rem 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.9);
+    color: var(--text);
+    cursor: pointer;
+  }
+
   #stats {
     font-size: 0.85rem;
     opacity: 0.85;
@@ -146,6 +161,7 @@
     white-space: nowrap;
   }
   td.wrap { white-space: normal; max-width: 300px; }
+  td.pick-cell { text-align: center; font-size: 1rem; }
 
   /* --- Inline Detail Row --- */
   .detail-row td {
@@ -182,6 +198,31 @@
     color: var(--text-muted);
     font-style: italic;
     margin-top: 0.25rem;
+  }
+
+  .staff-pick-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .bag-type-badge {
+    display: inline-block;
+    background: var(--highlight);
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    margin-left: 0.5rem;
+    vertical-align: middle;
   }
 
   .detail-specs {
@@ -227,6 +268,48 @@
     line-height: 1.6;
   }
 
+  /* --- Word Cloud --- */
+  .word-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.6rem;
+    align-items: baseline;
+    padding: 0.5rem 0;
+  }
+  .word-cloud span {
+    color: var(--accent);
+    cursor: default;
+    transition: opacity 0.2s;
+  }
+  .word-cloud span:hover { opacity: 1 !important; }
+
+  /* --- Taste Gauges --- */
+  .taste-gauge-item { margin-bottom: 0.5rem; }
+  .taste-gauge-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  /* --- Tab Sections --- */
+  .tab-section { margin-bottom: 0.75rem; }
+  .tab-section summary {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 0.25rem 0;
+  }
+  .tab-section summary:hover { text-decoration: underline; }
+  .tab-section p {
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0.5rem 0;
+    white-space: pre-line;
+  }
+
   /* --- Watchlist badges --- */
   .tier-badge {
     display: inline-block;
@@ -257,9 +340,9 @@
     border-radius: 8px;
     padding: 0.75rem;
     cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.25s;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.15s, border-color 0.25s;
   }
   .watchlist-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
   .watchlist-card h4 { font-size: 0.85rem; margin-bottom: 0.25rem; }
@@ -291,7 +374,7 @@
   @media (max-width: 768px) {
     header { flex-direction: column; align-items: stretch; }
     #search { max-width: none; }
-    .detail-specs { grid-template-columns: 1fr; }
+    #detail-specs { grid-template-columns: 1fr; }
     td { font-size: 0.8rem; padding: 0.4rem 0.5rem; }
   }
 </style>
@@ -307,13 +390,17 @@
       <span class="nav-group-label">green coffee</span>
       <div class="nav-group-tabs">
         <a class="nav-link" href="index.html">Sweet Maria's</a>
-        <a class="nav-link active">Hacea</a>
+        <a class="nav-link" href="hacea.html">Hacea</a>
         <a class="nav-link" href="cbc.html">CBC</a>
-        <a class="nav-link" href="royal.html">Royal</a>
+        <a class="nav-link active">Royal</a>
       </div>
     </div>
   </nav>
-  <input type="text" id="search" placeholder="Search coffees (e.g. &quot;chocolate&quot;, &quot;Ethiopia&quot;, &quot;natural&quot;)...">
+  <input type="text" id="search" placeholder="Search coffees (e.g. &quot;Kenya&quot;, &quot;natural&quot;, &quot;Crown Jewel&quot;)...">
+  <div class="filter-group">
+    <select id="filter-warehouse"><option value="">All Warehouses</option></select>
+    <select id="filter-type"><option value="">All Types</option></select>
+  </div>
   <span id="stats"></span>
 </header>
 
@@ -336,78 +423,113 @@
 <script>
 /* ---------- Config ---------- */
 const TABLE_COLS = [
-  { key: "name",              label: "Name",        wrap: true },
-  { key: "price",             label: "Price",       sort: "price" },
-  { key: "sca_cupping_score", label: "SCA Score",   sort: "num" },
-  { key: "country",           label: "Country" },
-  { key: "processing",        label: "Processing" },
-  { key: "varieties",         label: "Varieties",   wrap: true },
-  { key: "altitude",          label: "Altitude" },
+  { key: "name",         label: "Name",     wrap: true },
+  { key: "price_per_lb", label: "$/lb",     sort: "price" },
+  { key: "total_price",  label: "Total",    sort: "price" },
+  { key: "bag_type",     label: "Type" },
+  { key: "country",      label: "Country" },
+  { key: "process",      label: "Process",  wrap: true },
+  { key: "variety",      label: "Variety",  wrap: true },
+  { key: "is_staff_pick",label: "Pick",     render: "pick" },
 ];
 
 const SPEC_FIELDS = [
-  { key: "price", label: "Price" },
-  { key: "sca_cupping_score", label: "SCA Score" },
-  { key: "country", label: "Country" },
-  { key: "region", label: "Region" },
-  { key: "washing_station", label: "Washing Station" },
-  { key: "cooperative", label: "Cooperative" },
-  { key: "farmer_grower", label: "Farmer/Grower" },
-  { key: "varieties", label: "Varieties" },
-  { key: "processing", label: "Processing" },
-  { key: "altitude", label: "Altitude" },
-  { key: "humidity", label: "Humidity" },
-  { key: "density", label: "Density" },
-  { key: "harvest_date", label: "Harvest Date" },
-  { key: "arrival_date", label: "Arrival Date" },
-  { key: "grade", label: "Grade" },
-  { key: "marks", label: "Marks" },
-  { key: "reference_id", label: "Reference ID" },
-  { key: "tariff_cost", label: "Tariff Cost" },
-  { key: "coordinates", label: "Coordinates" },
+  { key: "price_per_lb",   label: "Price/lb" },
+  { key: "total_price",    label: "Total Price" },
+  { key: "bag_size",       label: "Bag Size" },
+  { key: "bag_type",       label: "Type" },
+  { key: "country",        label: "Country" },
+  { key: "region",         label: "Region" },
+  { key: "grower",         label: "Grower" },
+  { key: "variety",        label: "Variety" },
+  { key: "process",        label: "Process" },
+  { key: "altitude",       label: "Altitude" },
+  { key: "warehouse",      label: "Warehouse" },
+  { key: "position",       label: "Position" },
+  { key: "certifications", label: "Certifications" },
+  { key: "inventory",      label: "Inventory" },
 ];
 
 /* ---------- State ---------- */
 let allCoffees = [];
 let filtered = [];
 let searchIndex = null;
-let sortCol = "sca_cupping_score";
+let sortCol = "price_per_lb";
 let sortDir = -1;  // descending
 let selectedIdx = -1;
+let priceMin = 0;
+let priceMax = 20;
 
 /* ---------- Data loading ---------- */
-fetch("hacea-data.json")
+fetch("royal-data.json")
   .then(r => {
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
   })
   .then(data => {
     allCoffees = data.map((c, i) => ({ ...c, _idx: i }));
+
+    // Compute price range for gauge
+    const prices = allCoffees
+      .map(c => parseFloat((c.price_per_lb || "").replace("$", "")))
+      .filter(p => p > 0);
+    if (prices.length > 0) {
+      priceMin = Math.floor(Math.min(...prices));
+      priceMax = Math.ceil(Math.max(...prices));
+    }
+
     searchIndex = lunr(function() {
       this.field('name', { boost: 3 });
       this.field('country', { boost: 2 });
-      this.field('varieties');
-      this.field('processing');
-      this.field('tasting_notes');
-      this.field('story');
+      this.field('variety');
+      this.field('process');
+      this.field('flavor_notes');
+      this.field('about');
+      this.field('bag_type');
+      this.field('taste_text');
+      this.field('source_text');
       this.field('watchlist_match');
       this.field('watchlist_credential_detail');
       this.ref('_idx');
       allCoffees.forEach(c => { this.add(c); });
     });
+    buildFilterOptions();
     filtered = [...allCoffees];
     document.getElementById("loading").style.display = "none";
     renderWatchlist();
     buildTableHead();
-    sortAndRender();
+    applyFilters();
   })
   .catch(err => {
     document.getElementById("loading").textContent = "Failed to load data: " + err.message;
   });
 
-/* ---------- Search ---------- */
-document.getElementById("search").addEventListener("input", function() {
-  const q = this.value.trim();
+/* ---------- Filters ---------- */
+function buildFilterOptions() {
+  const warehouses = [...new Set(allCoffees.map(c => c.warehouse).filter(Boolean))].sort();
+  const types = [...new Set(allCoffees.map(c => c.bag_type).filter(Boolean))].sort();
+
+  const whSel = document.getElementById("filter-warehouse");
+  warehouses.forEach(w => {
+    const opt = document.createElement("option");
+    opt.value = w; opt.textContent = w;
+    whSel.appendChild(opt);
+  });
+
+  const typeSel = document.getElementById("filter-type");
+  types.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t; opt.textContent = t;
+    typeSel.appendChild(opt);
+  });
+}
+
+function applyFilters() {
+  const q = document.getElementById("search").value.trim();
+  const wh = document.getElementById("filter-warehouse").value;
+  const bt = document.getElementById("filter-type").value;
+
+  // Start with search
   if (!q) {
     filtered = [...allCoffees];
   } else if (searchIndex) {
@@ -423,9 +545,18 @@ document.getElementById("search").addEventListener("input", function() {
       );
     }
   }
+
+  // Apply dropdown filters
+  if (wh) filtered = filtered.filter(c => c.warehouse === wh);
+  if (bt) filtered = filtered.filter(c => c.bag_type === bt);
+
   selectedIdx = -1;
   sortAndRender();
-});
+}
+
+document.getElementById("search").addEventListener("input", applyFilters);
+document.getElementById("filter-warehouse").addEventListener("change", applyFilters);
+document.getElementById("filter-type").addEventListener("change", applyFilters);
 
 /* ---------- Table head ---------- */
 function buildTableHead() {
@@ -454,11 +585,12 @@ function buildTableHead() {
 /* ---------- Sorting ---------- */
 function sortVal(c, key) {
   const v = c[key] || "";
-  if (key === "price") {
+  const col = TABLE_COLS.find(c => c.key === key);
+  if (col && col.sort === "price") {
     return parseFloat(v.replace("$", "")) || 0;
   }
-  if (key === "sca_cupping_score") {
-    return parseFloat(v) || 0;
+  if (key === "is_staff_pick") {
+    return v === "Yes" ? 1 : 0;  // staff picks first when sorted descending
   }
   return v.toLowerCase();
 }
@@ -488,7 +620,11 @@ function renderTable() {
     if (c.watchlist_match) tr.classList.add("watchlist-row");
     TABLE_COLS.forEach(col => {
       const td = document.createElement("td");
-      if (col.key === "name" && c.watchlist_match) {
+      if (col.render === "pick") {
+        td.classList.add("pick-cell");
+        td.textContent = c[col.key] === "Yes" ? "\u2605" : "";
+        td.style.color = "var(--accent)";
+      } else if (col.key === "name" && c.watchlist_match) {
         td.innerHTML = esc(c[col.key] || "") + " " + tierBadgeHTML(c.watchlist_tier);
       } else {
         td.textContent = c[col.key] || "";
@@ -499,6 +635,7 @@ function renderTable() {
     tr.addEventListener("click", () => showDetail(i));
     tbody.appendChild(tr);
 
+    // Inline detail row
     if (i === selectedIdx) {
       const detailTr = document.createElement("tr");
       detailTr.className = "detail-row";
@@ -511,17 +648,21 @@ function renderTable() {
   });
 }
 
-/* ---------- Detail panel ---------- */
+/* ---------- Inline detail ---------- */
 function showDetail(idx) {
-  selectedIdx = selectedIdx === idx ? -1 : idx;
+  selectedIdx = selectedIdx === idx ? -1 : idx;  // toggle
   renderTable();
   buildTableHead();
 }
 
 function buildDetailHTML(c) {
+  // Name with badges
   let nameHtml = esc(c.name);
+  if (c.bag_type) nameHtml += ' <span class="bag-type-badge">' + esc(c.bag_type) + '</span>';
+  if (c.is_staff_pick === "Yes") nameHtml += ' <span class="staff-pick-badge">Staff Pick</span>';
   if (c.watchlist_match) nameHtml += " " + tierBadgeHTML(c.watchlist_tier);
 
+  // Accolade (watchlist info)
   let accolade = "";
   if (c.watchlist_match) {
     accolade = '<strong>' + esc(c.watchlist_match) + '</strong>';
@@ -529,31 +670,43 @@ function buildDetailHTML(c) {
     if (c.watchlist_credential_detail) accolade += '<br>' + esc(c.watchlist_credential_detail);
   }
 
+  // Specs
   const specsHtml = SPEC_FIELDS
     .filter(f => c[f.key])
     .map(f => '<div class="spec-item"><span class="spec-label">' + esc(f.label) + ':</span><span class="spec-value">' + esc(c[f.key]) + '</span></div>')
     .join("");
 
+  // Notes
   let notesHtml = "";
-  if (c.tasting_notes) {
-    notesHtml += '<div class="notes-section"><h3>Tasting Notes</h3><p>' + esc(c.tasting_notes) + '</p></div>';
+  if (c.flavor_notes) {
+    notesHtml += '<div class="notes-section"><h3>Flavor Notes</h3><p>' + esc(c.flavor_notes) + '</p></div>';
   }
-  if (c.roasting_notes) {
-    notesHtml += '<div class="notes-section"><h3>Roasting Notes</h3><p>' + esc(c.roasting_notes) + '</p></div>';
+  if (c.about) {
+    notesHtml += '<div class="notes-section"><h3>About</h3><p>' + esc(c.about) + '</p></div>';
   }
-  if (c.story) {
-    notesHtml += '<div class="notes-section"><h3>Origin Story</h3><p>' + esc(c.story) + '</p></div>';
+
+  // Tab text sections (collapsible)
+  const tabs = [
+    { key: 'overview_text', title: 'Overview' },
+    { key: 'taste_text', title: 'Taste Analysis' },
+    { key: 'source_text', title: 'Source Analysis' },
+  ];
+  let tabHtml = '';
+  for (const tab of tabs) {
+    if (c[tab.key]) {
+      tabHtml += '<details class="tab-section"><summary>' + tab.title + '</summary><p>' + esc(c[tab.key]) + '</p></details>';
+    }
   }
 
   return '<div class="detail-inner">' +
     '<div class="detail-header">' +
       '<div><h3>' + nameHtml + '</h3>' +
-        '<a href="' + esc(c.url) + '" target="_blank" rel="noopener">View on Hacea Coffee \u2192</a>' +
+        '<a href="' + esc(c.url) + '" target="_blank" rel="noopener">View on Royal Coffee \u2192</a>' +
         (accolade ? '<div class="detail-accolade">' + accolade + '</div>' : '') +
       '</div>' +
     '</div>' +
     '<div class="detail-specs">' + specsHtml + '</div>' +
-    notesHtml +
+    notesHtml + tabHtml +
   '</div>';
 }
 
@@ -585,7 +738,7 @@ function renderWatchlist() {
   document.getElementById("watchlist-count").textContent = "(" + matched.length + ")";
   const grid = document.getElementById("watchlist-grid");
   grid.innerHTML = matched.map(c => {
-    const price = c.price || "";
+    const price = c.price_per_lb || c.price || "";
     return '<div class="watchlist-card" onclick="toggleWatchlistDetail(this, \'' + esc(c.url) + '\')">' +
       '<h4>' + esc(c.name) + ' ' + tierBadgeHTML(c.watchlist_tier) + '</h4>' +
       '<div class="wc-meta">' +
@@ -607,12 +760,14 @@ function toggleWatchlistDetail(cardEl, url) {
     cardEl.classList.remove('expanded');
     return;
   }
+  // Close any other open watchlist details
   document.querySelectorAll('.wc-detail').forEach(el => el.remove());
   document.querySelectorAll('.watchlist-card.expanded').forEach(el => el.classList.remove('expanded'));
 
   const c = allCoffees.find(p => p.url === url);
   if (!c) return;
 
+  // Reorder grid so expanded card starts its row
   const grid = cardEl.parentElement;
   const cols = Math.max(1, Math.floor(grid.offsetWidth / 290));
   const cards = [...grid.querySelectorAll('.watchlist-card')];
@@ -635,8 +790,6 @@ function esc(s) {
   d.textContent = s;
   return d.innerHTML;
 }
-
-
 </script>
 </body>
 </html>
