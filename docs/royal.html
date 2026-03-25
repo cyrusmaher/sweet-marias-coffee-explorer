@@ -370,12 +370,52 @@
     font-size: 1.1rem;
   }
 
-  /* --- Responsive --- */
+  /* --- Tablet / large phone --- */
   @media (max-width: 768px) {
-    header { flex-direction: column; align-items: stretch; }
-    #search { max-width: none; }
-    #detail-specs { grid-template-columns: 1fr; }
+    header {
+      flex-direction: column; align-items: stretch;
+      padding: 0.75rem 1rem; gap: 0.6rem;
+    }
+    header h1 { font-size: 1.2rem; }
+    .nav-tabs { gap: 0.3rem; }
+    .nav-link { font-size: 0.78rem; padding: 0.25rem 0.5rem; }
+    #search { max-width: none; min-width: 0; font-size: 0.9rem; }
+    .filter-group { width: 100%; }
+    .filter-group select { flex: 1; min-width: 0; font-size: 0.78rem; }
+    #stats { font-size: 0.78rem; text-align: center; }
+    main { padding: 0.75rem; }
+    .watchlist-grid { grid-template-columns: 1fr; }
+    .watchlist-card { padding: 0.6rem; }
+    .detail-specs, #detail-specs { grid-template-columns: 1fr; }
+    .detail-inner { padding: 0.75rem; }
+    .detail-header h3 { font-size: 0.95rem; }
+    table { font-size: 0.8rem; }
     td { font-size: 0.8rem; padding: 0.4rem 0.5rem; }
+    thead th { padding: 0.5rem; font-size: 0.78rem; }
+    .word-cloud { gap: 0.2rem 0.4rem; }
+  }
+
+  /* --- Small phone --- */
+  @media (max-width: 480px) {
+    header { padding: 0.6rem 0.75rem; gap: 0.5rem; }
+    header h1 { font-size: 1.05rem; }
+    .nav-group-label { font-size: 0.55rem; }
+    .nav-link { font-size: 0.72rem; padding: 0.2rem 0.4rem; }
+    #search { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
+    .filter-group select { font-size: 0.72rem; padding: 0.3rem 0.4rem; }
+    main { padding: 0.5rem; }
+    .watchlist-card { padding: 0.5rem; }
+    .detail-inner { padding: 0.5rem; }
+    .detail-header h3 { font-size: 0.88rem; }
+    .detail-specs, #detail-specs { gap: 0.3rem 0.5rem; font-size: 0.78rem; }
+    table { font-size: 0.75rem; }
+    td { font-size: 0.75rem; padding: 0.3rem 0.4rem; }
+    thead th { padding: 0.4rem; font-size: 0.72rem; }
+    .notes-section h3 { font-size: 0.8rem; }
+    .notes-section p { font-size: 0.78rem; }
+    #watchlist-section h2 { font-size: 0.95rem; }
+    .tab-section summary { font-size: 0.82rem; }
+    .tab-section p { font-size: 0.8rem; }
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
