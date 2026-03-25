@@ -783,6 +783,16 @@ def write_json(records: list[dict]) -> None:
         if r.get("price_per_lb")
         and "Shanghai" not in r.get("warehouse", "")
     ]
+    # Deduplicate: same coffee at same warehouse and price is a duplicate lot listing
+    seen = set()
+    deduped = []
+    for r in filtered:
+        key = (r.get("name", ""), r.get("warehouse", ""), r.get("price_per_lb", ""))
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+    log.info("Deduped %d → %d coffees", len(filtered), len(deduped))
+    filtered = deduped
     JSON_FILE.write_text(
         json.dumps(filtered, indent=2, ensure_ascii=False), encoding="utf-8"
     )
