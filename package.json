@@ -1,0 +1,8 @@
+{
+  "name": "green-coffee-explorer",
+  "private": true,
+  "scripts": {
+    "serve:docs": "node scripts/serve-docs.js",
+    "test:royal-wrap": "node scripts/test-royal-wrap.js"
+  }
+}
