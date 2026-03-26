@@ -176,6 +176,7 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
     animation: detailSlideIn 0.25s ease-out;
+    max-width: calc(100vw - 2rem); box-sizing: border-box;
   }
   .detail-header {
     display: flex;
@@ -228,14 +229,14 @@
   }
 
   .detail-specs {
-    display: flex; flex-wrap: wrap;
-    gap: 0.4rem 1.5rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: 0.5rem 1.5rem;
     margin-bottom: 1rem;
     font-size: 0.875rem;
   }
-  .spec-item { display: flex; gap: 0.4rem; }
-  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; }
-  .spec-value { color: var(--text); }
+  .spec-item { display: flex; gap: 0.4rem; overflow: hidden; }
+  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+  .spec-value { color: var(--text); overflow-wrap: break-word; word-wrap: break-word; min-width: 0; }
 
   /* --- Watchlist card expansion --- */
   .watchlist-card.expanded {
@@ -267,6 +268,7 @@
     font-size: 0.875rem;
     color: var(--text);
     line-height: 1.6;
+    white-space: pre-line;
   }
 
   /* --- Word Cloud --- */
@@ -725,12 +727,29 @@ function buildDetailHTML(c) {
     .map(f => '<div class="spec-item"><span class="spec-label">' + esc(f.label) + ':</span><span class="spec-value">' + esc(c[f.key]) + '</span></div>')
     .join("");
 
-  // Notes
+  // Strip leading title from tab text (scraper captures heading as part of content)
+  function stripTabTitle(text, title) {
+    if (!text) return "";
+    // Remove leading title variations: "Overview\xa0\n", "TasteTaste Analysis by", "SourceSource Analysis by"
+    let s = text.replace(/^\s*\u00a0?\s*\n*/g, ''); // leading whitespace/nbsp/newlines
+    const titleLower = title.toLowerCase().replace(/\s+/g, '');
+    while (s.length > 0 && s.toLowerCase().replace(/\s+/g, '').startsWith(titleLower)) {
+      s = s.substring(s.toLowerCase().indexOf(title.toLowerCase().charAt(title.length - 1)) + 1).replace(/^\s*\u00a0?\s*\n*/g, '');
+    }
+    // Also strip if it starts with a repeated word like "TasteTaste" → remove first occurrence
+    const firstWord = title.split(' ')[0];
+    if (s.toLowerCase().startsWith(firstWord.toLowerCase())) {
+      s = s.substring(firstWord.length).replace(/^\s*\u00a0?\s*/g, '');
+    }
+    return s.trim();
+  }
+
+  // Notes - only show "About" if there's no overview_text (they're usually identical)
   let notesHtml = "";
   if (c.flavor_notes) {
     notesHtml += '<div class="notes-section"><h3>Flavor Notes</h3><p>' + esc(c.flavor_notes) + '</p></div>';
   }
-  if (c.about) {
+  if (c.about && !c.overview_text) {
     notesHtml += '<div class="notes-section"><h3>About</h3><p>' + esc(c.about) + '</p></div>';
   }
 
@@ -743,7 +762,10 @@ function buildDetailHTML(c) {
   let tabHtml = '';
   for (const tab of tabs) {
     if (c[tab.key]) {
-      tabHtml += '<details class="tab-section"><summary>' + tab.title + '</summary><p>' + esc(c[tab.key]) + '</p></details>';
+      const cleaned = stripTabTitle(c[tab.key], tab.title);
+      if (cleaned) {
+        tabHtml += '<details class="tab-section"><summary>' + tab.title + '</summary><p>' + esc(cleaned) + '</p></details>';
+      }
     }
   }
 
