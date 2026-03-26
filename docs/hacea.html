@@ -187,15 +187,14 @@
   }
 
   .detail-specs {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.5rem 1.5rem;
+    display: flex; flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
     margin-bottom: 1rem;
     font-size: 0.875rem;
   }
-  .spec-item { display: flex; gap: 0.4rem; min-width: 0; overflow: hidden; }
-  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
-  .spec-value { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .spec-item { display: flex; gap: 0.4rem; }
+  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .spec-value { color: var(--text); }
 
   /* --- Watchlist card expansion --- */
   .watchlist-card.expanded {
