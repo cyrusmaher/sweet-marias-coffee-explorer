@@ -196,9 +196,9 @@
     margin-bottom: 1rem;
     font-size: 0.875rem;
   }
-  .spec-item { display: flex; gap: 0.4rem; }
-  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; }
-  .spec-value { color: var(--text); }
+  .spec-item { display: flex; gap: 0.4rem; min-width: 0; overflow: hidden; }
+  .spec-label { font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+  .spec-value { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* --- Watchlist card expansion --- */
   .watchlist-card.expanded {
@@ -310,7 +310,7 @@
     .detail-inner { padding: 0.75rem; }
     .detail-header h3 { font-size: 0.95rem; }
     table { font-size: 0.8rem; }
-    td { font-size: 0.8rem; padding: 0.4rem 0.5rem; }
+    td { font-size: 0.8rem; padding: 0.4rem 0.5rem; white-space: normal; }
     thead th { padding: 0.5rem; font-size: 0.78rem; }
     /* Hide Category, Variety columns on tablet */
     td:nth-child(6), th:nth-child(6),
