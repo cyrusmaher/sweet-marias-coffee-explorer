@@ -971,10 +971,10 @@ def main():
     ])
 
     # Use LLM watchlist_match as fallback for unmatched products
-    from match_watchlist import load_watchlist as _load_wl, _normalize as _wl_normalize
+    from match_watchlist import load_watchlist as _load_wl
     _wl_entries = _load_wl()
     _wl_by_name = {
-        _wl_normalize(p.get("producer_name", "")): p
+        p.get("producer_name", "").strip().lower(): p
         for p in _wl_entries if p.get("producer_name")
     }
     llm_fallback_count = 0
@@ -983,7 +983,7 @@ def main():
             url = rec.get("url", "")
             llm = llm_results.get(url)
             if llm and getattr(llm, "watchlist_match", None):
-                producer = _wl_by_name.get(_wl_normalize(llm.watchlist_match))
+                producer = _wl_by_name.get(llm.watchlist_match.strip().lower())
                 if producer:
                     rec["watchlist_match"] = producer.get("producer_name", "")
                     rec["watchlist_farm"] = producer.get("farm_or_station", "")
