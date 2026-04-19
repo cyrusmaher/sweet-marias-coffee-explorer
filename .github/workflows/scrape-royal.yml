@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+env:
+  GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+  VERTEX_AI_LOCATION: global
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # fallback if not using Vertex AI
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
@@ -32,7 +37,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/royal_coffees.csv data/royal_detail_cache.json docs/royal-data.json
+          git add data/royal_coffees.csv data/royal_detail_cache.json data/match_cache.json docs/royal-data.json
           if git diff --cached --quiet; then
             echo "No data changes detected."
           else

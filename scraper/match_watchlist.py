@@ -1,7 +1,7 @@
 """Producer watchlist matching — LLM-based matching for green coffee scrapers.
 
-Loads producer_watchlist.csv from the coffee-explorer repo and matches product
-records against it using Gemini Flash. Results are cached by content hash.
+Loads data/producer_watchlist.csv and matches product records against it using
+Gemini Flash. Results are cached by content hash.
 """
 
 import csv
@@ -17,10 +17,7 @@ from google import genai
 log = logging.getLogger(__name__)
 
 WATCHLIST_FILE = (
-    Path(__file__).resolve().parent.parent.parent
-    / "coffee-explorer"
-    / "data"
-    / "producer_watchlist.csv"
+    Path(__file__).resolve().parent.parent / "data" / "producer_watchlist.csv"
 )
 
 MATCH_CACHE_FILE = Path(__file__).resolve().parent.parent / "data" / "match_cache.json"

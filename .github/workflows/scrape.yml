@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+env:
+  GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+  VERTEX_AI_LOCATION: global
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # fallback if not using Vertex AI
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
