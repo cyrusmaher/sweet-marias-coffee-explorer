@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r scraper/requirements.txt
-          npx playwright install --with-deps chromium
+          python -m playwright install --with-deps chromium
 
       - name: Run scraper
         run: python scraper/scrape_hacea.py
