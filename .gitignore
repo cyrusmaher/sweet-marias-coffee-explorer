@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+.env
+.env.*
 .playwright-mcp/
 .claude/
 screenshot_full.png
