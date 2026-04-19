@@ -572,6 +572,12 @@ fetch("royal-data.json")
     renderWatchlist();
     buildTableHead();
     applyFilters();
+    const _urlQ = new URLSearchParams(location.search).get("q");
+    if (_urlQ) {
+      const _s = document.getElementById("search");
+      _s.value = _urlQ;
+      _s.dispatchEvent(new Event("input"));
+    }
   })
   .catch(err => {
     document.getElementById("loading").textContent = "Failed to load data: " + err.message;
@@ -883,6 +889,22 @@ function esc(s) {
   d.textContent = s;
   return d.innerHTML;
 }
+
+/* ---------- Carry search query across source tabs (?q=) ---------- */
+document.getElementById("search").addEventListener("input", () => {
+  const _url = new URL(location);
+  const _v = document.getElementById("search").value;
+  if (_v) _url.searchParams.set("q", _v);
+  else _url.searchParams.delete("q");
+  history.replaceState(null, "", _url);
+});
+document.querySelectorAll(".nav-group-tabs a.nav-link").forEach(a => {
+  a.addEventListener("click", () => {
+    const _u = new URL(a.href, location.href);
+    _u.search = location.search;
+    a.href = _u.toString();
+  });
+});
 </script>
 </body>
 </html>
