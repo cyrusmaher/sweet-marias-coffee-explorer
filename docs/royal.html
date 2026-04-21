@@ -898,7 +898,7 @@ document.getElementById("search").addEventListener("input", () => {
   else _url.searchParams.delete("q");
   history.replaceState(null, "", _url);
 });
-document.querySelectorAll(".nav-group-tabs a.nav-link").forEach(a => {
+document.querySelectorAll(".nav-tabs a.nav-link[href]").forEach(a => {
   a.addEventListener("click", () => {
     const _u = new URL(a.href, location.href);
     _u.search = location.search;
