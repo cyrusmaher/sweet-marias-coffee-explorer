@@ -1044,5 +1044,51 @@
     "tasting_notes": "Fragrance and aroma of cherry, maple syrup, and ripe melon. Notes of dried fruit, golden raisin, honey with an aftertaste of raspberry and almond coming together for a soft sweetness. Tart citric acidity and a medium body with a milky mouthfeel.",
     "roasting_notes": "Villa Sarchi is a compact, high-elevation variety that tends toward moderate-to-high density, so approach drying with enough heat to build a strong rate of rise heading into Maillard; treat drying as the launch pad for the phases that follow. Because this is a warm anaerobic natural, the bean cell structure carries a softness that rewards a gentle start; avoid a high charge temperature, which risks scorching on the exterior before the interior has had time to develop. Watch for an energetic exothermic response as the coffee approaches first crack, and be ready to pull back gas incrementally through caramelization rather than making a single sharp reduction that could stall momentum. The fruit-forward character of this processing style opens up best with a light-to-medium roast, where extended caramelization time builds body and sweetness without masking the variety’s natural brightness.",
     "story": "Volcan Azul has won 1st place Cup of Excellence three times Volcan Azul is the flagship estate of the Castro Kahle family situated on the slopes of the Poás Volcano in Costa Rica’s West Valley among many other top-10 finishes, most recently 2nd and 8th place in the washed and experimental categories in 2025 Villa Sarchi is a natural mutation of Bourbon first identified in the town of Sarchi in Costa Rica’s Central Valley. It is prized for its compact plant structure, which allows it to thrive at elevation, and for the bright, fruit-forward cups it produces. The warm anaerobic process involves sealing ripe cherries in sealed tanks at a controlled elevated temperature, slowing fermentation and concentrating the fruit character of the variety. The Castro Kahle family has been conserving land since the 1980s, well before environmental stewardship became a common conversation in the coffee industry. In addition to the conservation area above the farm, the family protects over 1,500 hectares of primary forest in the Osa Peninsula, a region National Geographic has called one of the most biologically rich places on Earth."
+  },
+  "https://haceacoffee.com/products/guatemala-santa-rosa-finca-santa-ana-orange-bourbon-natural": {
+    "specs": {
+      "Country": "Guatemala",
+      "Region": "Nuevo Viñas, Santa Rosa Department",
+      "Farm": "Finca Santa Ana",
+      "Coordinates": "14°12'16.3\"N 90°29'54.2\"W",
+      "Farmer/Grower": "Fernando “Nando” Diaz",
+      "Varieties": "Orange Bourbon",
+      "Processing": "Natural",
+      "Altitude": "1650-1770 masl",
+      "Marks": "011-0461-0042",
+      "Reference ID": "HA-25236-11",
+      "Humidity": "11.3%",
+      "Density": "1.16%",
+      "Harvest Date": "March, 2025",
+      "Arrival Date": "October, 2025",
+      "SCA Cupping Score": "85.75",
+      "Tariff Cost": "$0.49/lb"
+    },
+    "tasting_notes": "Fragrance and aroma of black cherry and cola with notes of milk chocolate, orange blossom and rooibos tea. Aftertaste of raisin, dried fig and red grape with a mild malic acidity and a smooth, creamy mouthfeel.",
+    "roasting_notes": "For natural processed coffees, we recommend starting with a lower charge temperature in order to heat the bean evenly and avoid any roast defects.  At a lighter roast, this coffee will have soft florals of orange blossom and rooibos tea.  With more development, the dried fruit sweetness and chocolate character will come out.",
+    "story": "Fernando Diaz's family has cultivated this land since the 18th century.  Today Finca Santa Ana has built a reputation for quality, including winning 4th place in the Cup of Excellence competition in 2010. Within Guatemala’s Department of Santa Rosa, Finca Santa Ana sits between the Tecuamburro and Pacaya volcanoes Finca Santa Ana primarily cultivates Bourbon, Catuai, and Pache varieties. Each cherry is handpicked with care by skilled team members who ensure the plants remain healthy for future harvests. Shade trees like Gravilea, Cuje, and Chalum help protect the coffee plants and create a natural ecosystem. Carefully designed contour rows prevent erosion and maintain the rich volcanic soil. Over generations, this approach has produced coffees recognized well beyond Guatemala for their consistency and character."
+  },
+  "https://haceacoffee.com/products/guatemala-santa-rosa-finca-santa-ana-tafari-lavado-17t8": {
+    "specs": {
+      "Country": "Guatemala",
+      "Region": "Nuevo Viñas, Santa Rosa Department",
+      "Farm": "Finca Santa Ana",
+      "Coordinates": "14°12'16.3\"N 90°29'54.2\"W",
+      "Farmer/Grower": "Fernando “Nando” Diaz",
+      "Varieties": "Tafari (Ethiopian Heirloom)",
+      "Processing": "Washed",
+      "Altitude": "1650-1770 masl",
+      "Marks": "011-0461-0040",
+      "Reference ID": "HA-25236-11",
+      "Humidity": "12%",
+      "Density": "1.16%",
+      "Harvest Date": "March, 2025",
+      "Arrival Date": "October, 2025",
+      "SCA Cupping Score": "86.00",
+      "Tariff Cost": "$0.45/lb"
+    },
+    "tasting_notes": "Fragrance and aroma of dark chocolate, florals and hazelnut. Notes of chamomile and milk chocolate with an aftertaste of citrus fruits and hazelnut. Marshmallow-like sweetness, medium-bright citric and lactic acidity with a medium body and creamy mouthfeel.",
+    "roasting_notes": "To best pull out the delicate floral notes in the fragrance and finish, we recommend a light roast.  High heat application and a higher charge temperature will bring out the complex citrus character in the coffee.",
+    "story": "Fernando Diaz's family has cultivated this land since the 18th century.  Today Finca Santa Ana has built a reputation for quality, including winning 4th place in the Cup of Excellence competition in 2010. Within Guatemala’s Department of Santa Rosa, Finca Santa Ana sits between the Tecuamburro and Pacaya volcanoes Finca Santa Ana primarily cultivates Bourbon, Catuai, and Pache varieties. Each cherry is handpicked with care by skilled team members who ensure the plants remain healthy for future harvests. Shade trees like Gravilea, Cuje, and Chalum help protect the coffee plants and create a natural ecosystem. Carefully designed contour rows prevent erosion and maintain the rich volcanic soil. Over generations, this approach has produced coffees recognized well beyond Guatemala for their consistency and character."
   }
 }
