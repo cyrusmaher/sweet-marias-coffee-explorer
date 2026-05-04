@@ -4765,5 +4765,46 @@
       "Decaffeinated": "No"
     },
     "description": "This new bold earthy coffee blend brings out the best of African and Asian coffee beans with homage to the OG organic version. African coffees are usually described as complex, fruity and floral. These are stronger, fragrant-rich, and full-bodied flavored beans. Asian coffees tend to be earthier and darker than most other regional blends. These coffees tend to be smooth, dense, and exotic with dark chocolate, bold nuttiness, and subtle earthy tones. We think this coffee is best as a dark roast, but your taste will be the final decider! Let us know how you roasted this variety in the product reviews.Try before you stock up with a 1/2 pound sample!"
+  },
+  "https://www.coffeebeancorral.com/product/Sumatra-Mutu-Batak-Lintong__SUMMUTUBATAK.aspx": {
+    "full_name": "Home",
+    "country": "Sumatra",
+    "coffee_name": "Mutu Batak",
+    "coff_region": "Lintong",
+    "sku": "SUMMUTUBATAK",
+    "price": "$9.50",
+    "cupping_notes": "Triple picked, wet hulled coffee, with a heavy syrup body, flavor notes of clean cedar and tobacco.",
+    "attributes": {
+      "Brightness": 3,
+      "Body": 6,
+      "Aroma": 5,
+      "Complexity": 6,
+      "Balance": 4,
+      "Sweetness": 2
+    },
+    "flavors": {
+      "Spicy": 3,
+      "Chocolaty": 1,
+      "Nutty": 1,
+      "Buttery": 3,
+      "Fruity": 1,
+      "Flowery": 1,
+      "Winey": 1,
+      "Earthy": 4
+    },
+    "specs": {
+      "Category": "Conventional",
+      "Country": "Indonesia",
+      "Local Region": "Lintong",
+      "Process": "Wet Hulled",
+      "Variety": "Ateng, Jember, Garundang",
+      "Altitude (meters)": "1,000 - 1,400 masl",
+      "Harvest": "Main Crop: October/December; Fly Crop: March/April",
+      "Organic Certification": "No",
+      "Fair Trade": "No",
+      "Rainforest Alliance Certified": "No",
+      "Decaffeinated": "No"
+    },
+    "description": "Descriptively given the Indonesian name for “quality,” this bean is produced in Lintongnihuta within Lake Toba’s southern shores. Workers prepare the Mutu Batak bean with heavy vigilance––they are completely sun-dried and triple-picked. Cupping Notes: A heavy syrupy body with flavor notes of clean cedar and tobacco. Try before you stock up with a 1/2 pound sample!"
   }
 }
